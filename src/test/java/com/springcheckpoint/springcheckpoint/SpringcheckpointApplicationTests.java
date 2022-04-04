@@ -34,9 +34,8 @@ class SpringcheckpointApplicationTests {
 	@Test
 	@Transactional
 	@Rollback
-	void testPostMappingCalculate() throws Exception {
+	void canGetAListOfUsers() throws Exception {
 
-		//Get the lesson 5 value
 		this.mvc.perform(get("/users"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].email").value("josh@joshmatos.com") );
@@ -58,9 +57,9 @@ class SpringcheckpointApplicationTests {
 	@Test
 	@Transactional
 	@Rollback
-	void testPostForOneUser() throws Exception {
+	void canCreateAUserWithPost() throws Exception {
 
-		//Get the lesson 5 value
+
 		this.mvc.perform(post("/users")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("{\"email\": \"john@example.com\", \"password\": \"something-secret\"}"))
@@ -73,9 +72,9 @@ class SpringcheckpointApplicationTests {
 	@Test
 	@Transactional
 	@Rollback
-	void testGetByPath() throws Exception {
+	void canGetAUserWithPathVariable() throws Exception {
 
-		//Get the lesson 5 value
+
 		this.mvc.perform(get("/users/2")
 						.contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -87,10 +86,10 @@ class SpringcheckpointApplicationTests {
 	@Test
 	@Transactional
 	@Rollback
-	void testGetAndPatch() throws Exception {
+	void canUpdateAUserWithPatchAndPathVariable() throws Exception {
 
-		//Get the lesson 5 value
-		this.mvc.perform(patch("/users/1")
+
+		this.mvc.perform(patch("/users/5")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content("{\"email\": \"john@example.com\", \"password\": \"1234\"}"))
 				.andExpect(status().isOk())

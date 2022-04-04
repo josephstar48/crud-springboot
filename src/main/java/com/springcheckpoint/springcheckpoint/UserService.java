@@ -12,6 +12,7 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
 
+    //Get all users
     public List<UserDTO> allUsers() {
 
         List<User> userList = userRepository.findAll();
@@ -24,7 +25,7 @@ public class UserService {
         }
         return userDTOList;
     }
-
+    //Data Transfer Object (DTO) for users
     public UserDTO postAUser(User user) {
         if(user == null) {
             return null;
@@ -33,6 +34,7 @@ public class UserService {
         return new UserDTO(user.getId(), user.getEmail());
     }
 
+    //Return all users as DTO
     public UserDTO getAUser(Integer id) {
         //If user is not in database return null
         if(!userRepository.existsById(id)) {
@@ -46,6 +48,7 @@ public class UserService {
         }
     }
 
+    //Update user, return DTO
     public UserDTO patchAUser(Integer id, User paramUser) {
         //If user is not in database return null
         if(!userRepository.existsById(id) || paramUser == null) {
