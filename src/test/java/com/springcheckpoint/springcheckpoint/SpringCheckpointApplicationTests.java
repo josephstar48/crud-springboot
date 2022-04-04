@@ -1,35 +1,32 @@
 package com.springcheckpoint.springcheckpoint;
 
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.print.attribute.standard.Media;
-import javax.swing.*;
-import java.util.List;
+import javax.persistence.Id;
 
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.Matchers.is;
 
 @AutoConfigureMockMvc
 @SpringBootTest
-class SpringcheckpointApplicationTests {
+class SpringCheckpointApplicationTests {
 
 	@Autowired
 	MockMvc mvc;
+
+	@Mock
+	private UserRepository userRepository;
+
 
 	@Test
 	@Transactional
@@ -99,5 +96,37 @@ class SpringcheckpointApplicationTests {
 
 
 	}
+	@Test
+	@Transactional
+	@Rollback
+	void canDeleteUserAndReturnCount() throws Exception {
+		this.mvc.perform(delete(("/users/1")))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.count").value("4"));
+	}
+
+	@Test
+	@Transactional
+	@Rollback
+	void canPostAndAuthenticateUser() throws Exception {
+		User user6 = new User("josh@joshmatos.com", "password");
+		userRepository.save(user6);
+		this.mvc.perform(post("/users/authenticate")
+				.contentType(MediaType.APPLICATION_JSON)
+						.content("{\"email\": \"josh@joshmatos.com\", \"password\": \"password\"}"))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.authenticated").value(true))
+				.andExpect(jsonPath("$.user.id").value("1"))
+				.andExpect(jsonPath("$.user.email").value("josh@joshmatos.com"));
+
+	}
 
 }
+
+//{
+//  "authenticated": true,
+//  "user": {
+//    "id": 12,
+//    "email": "angelica@example.com"
+//  }
+//}

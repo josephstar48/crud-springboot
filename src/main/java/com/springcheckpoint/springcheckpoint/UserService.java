@@ -1,9 +1,10 @@
 package com.springcheckpoint.springcheckpoint;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.swing.plaf.ListUI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,6 @@ public class UserService {
 
     //Get all users
     public List<UserDTO> allUsers() {
-
         List<User> userList = userRepository.findAll();
         List<UserDTO> userDTOList = new ArrayList<>();
 
@@ -71,5 +71,29 @@ public class UserService {
             //Take user class from database and transfer into DTO
             return new UserDTO(user.getId(), user.getEmail());
         }
+    }
+
+    public UserCount deleteUserById(int id) {
+       if (userRepository.existsById(id)) {
+           userRepository.deleteById(id);
+           return new UserCount(userRepository.count());
+       } else{
+           return null;
+       }
+
+    }
+
+    public Object userAuthentication(User user) {
+        User authUser = userRepository.findUserByEmail(user.getEmail());
+        UserDTO userDTO = new UserDTO(authUser.getId(), authUser.getEmail());
+
+        if (authUser.getPassword().equals(user.getPassword())) {
+            return new AuthUserDTO(true, userDTO);
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode customReturnObject = mapper.createObjectNode();
+        customReturnObject.put("authenticated", "false");
+        return customReturnObject;
     }
 }
